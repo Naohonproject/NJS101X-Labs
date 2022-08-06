@@ -1,1 +1,1 @@
-hello+world&nameLE+TUAN+BAO
+hello+world&name
