@@ -9,7 +9,7 @@ function requestHandler(req, res) {
 		res.write("<html>");
 		res.write("<head><title>Login</title><head/>");
 		res.write(
-			"<body><form form action = '/message' method = 'POST' ><input type='text' name = 'message'/><button type = 'submit'>send</button></form ></body > "
+			"<body><form form action = '/message' method = 'POST' ><input type='text' name = 'message'/><input type='text' name = 'name'/><button type = 'submit'>send</button></form ></body > "
 		);
 		res.write("</html>");
 		return res.end();
@@ -22,6 +22,7 @@ function requestHandler(req, res) {
 
 		return req.on("end", () => {
 			const parsedBody = Buffer.concat(body).toString();
+			console.log(parsedBody);
 			const [name, ...message] = parsedBody.split("=");
 			const messageContent = message.join("");
 			fs.writeFile("message.txt", messageContent, (error) => {
