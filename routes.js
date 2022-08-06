@@ -40,7 +40,12 @@ function requestHandler(req, res) {
 	res.end();
 }
 
-module.exports = {
-	handler: requestHandler,
-	someText: "some hard code text here to test",
-};
+// module.exports = requestHandler;
+
+// module.exports = {
+// 	handler: requestHandler,
+// 	someText: "some hard code text here to test",
+// };
+
+exports.handler = requestHandler;
+exports.someText = "sometext to test export module";
