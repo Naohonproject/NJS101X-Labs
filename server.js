@@ -10,10 +10,10 @@ app.use((req, res, next) => {
 	next();
 });
 
-app.use((res, req, next) => {
+app.use((req, res, next) => {
 	console.log("in the sencond middle ware!!!");
+	res.send("<h1>Hello From ExpressJs server</h1>");
 });
 
 const server = http.createServer(app);
 server.listen(3000);
-    
