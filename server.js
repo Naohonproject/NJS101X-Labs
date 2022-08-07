@@ -7,7 +7,6 @@ const express = require("express");
 const server = express();
 
 server.use(bodyParser.urlencoded({ extended: true }));
-// server.use(bodyParser(undefined, { extends: false }));
 
 server.use("/add-product", (req, res, next) => {
 	console.log("in the first middleware");
@@ -16,7 +15,7 @@ server.use("/add-product", (req, res, next) => {
 	);
 });
 
-server.use("/product", (req, res, next) => {
+server.post("/product", (req, res, next) => {
 	console.log(req.body);
 	res.redirect("/");
 });
