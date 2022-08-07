@@ -1,5 +1,5 @@
 /** @format */
-
+const path = require("path");
 const bodyParser = require("body-parser");
 const express = require("express");
 
@@ -13,7 +13,7 @@ server.use("/admin", adminRouter);
 server.use(userRouter);
 
 server.use("/", (req, res, next) => {
-	res.status(404).send("<h1>Page Not Found</h1>");
+	res.status(404).sendFile(path.join(__dirname, "views", "page-not-found.html"));
 });
 
 server.listen(3000);
