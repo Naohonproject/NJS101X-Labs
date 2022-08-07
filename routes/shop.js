@@ -8,7 +8,7 @@ const rootDir = require("../util/path");
 const router = express.Router();
 
 router.get("/", (req, res, next) => {
-	res.render("shop");
+	res.render("shop", { prods: admin.products, title: "Shop" });
 });
 
 module.exports = router;
