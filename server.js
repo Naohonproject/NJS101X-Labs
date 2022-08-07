@@ -9,7 +9,7 @@ const userRouter = require("./routes/shop");
 const server = express();
 server.use(bodyParser.urlencoded({ extended: true }));
 
-server.use(adminRouter);
+server.use("/admin", adminRouter);
 server.use(userRouter);
 
 server.use("/", (req, res, next) => {
