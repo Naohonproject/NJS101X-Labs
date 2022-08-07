@@ -1,19 +1,22 @@
 /** @format */
-const http = require("http");
 
 const express = require("express");
 
-const app = express();
+const server = express();
 
-app.use((req, res, next) => {
-	console.log("in the first middle ware!");
+server.use("/", (req, res, next) => {
+	console.log("this always runs");
 	next();
 });
 
-app.use((req, res, next) => {
-	console.log("in the sencond middle ware!!!");
+server.use("/add-product", (req, res, next) => {
+	console.log("in the first middleware");
+	res.send("<h1>The Add product page</h1>");
+});
+
+server.use("/", (req, res, next) => {
+	console.log("in the second middleware");
 	res.send("<h1>Hello From ExpressJs server</h1>");
 });
 
-const server = http.createServer(app);
 server.listen(3000);
