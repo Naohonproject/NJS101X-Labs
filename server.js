@@ -2,7 +2,6 @@
 const path = require("path");
 const bodyParser = require("body-parser");
 const express = require("express");
-const exressHbs = require("express-handlebars");
 
 const rootDir = require("./util/path");
 const admin = require("./routes/admin");
@@ -12,13 +11,9 @@ const userRouter = require("./routes/shop");
 const server = express();
 
 // define a template engine
-server.engine(
-	"handlebars",
-	exressHbs({ layoutsDir: "views/layouts/", defaultLayout: "main-layout" })
-);
 
 // set up view engine
-server.set("view engine", "handlebars");
+server.set("view engine", "ejs");
 // set up views folder to find template
 server.set("views", "views");
 
