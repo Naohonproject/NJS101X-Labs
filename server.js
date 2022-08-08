@@ -12,7 +12,10 @@ const userRouter = require("./routes/shop");
 const server = express();
 
 // define a template engine
-server.engine("handlebars", exressHbs());
+server.engine(
+	"handlebars",
+	exressHbs({ layoutsDir: "views/layouts/", defaultLayout: "main-layout" })
+);
 
 // set up view engine
 server.set("view engine", "handlebars");
