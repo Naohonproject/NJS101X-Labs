@@ -6,6 +6,7 @@ const express = require("express");
 const rootDir = require("./util/path");
 const adminRoutes = require("./routes/admin");
 const userRouter = require("./routes/shop");
+const errorController = require("./controllers/404");
 
 // create a server
 const server = express();
@@ -20,13 +21,13 @@ server.set("views", "views");
 // apply middlware to be reflect the period between req and res
 server.use(bodyParser.urlencoded({ extended: true }));
 
+// define the public static folder
 server.use(express.static(path.join(rootDir, "public")));
 
 server.use("/admin", adminRoutes);
 server.use(userRouter);
 
-server.use("/", (req, res, next) => {
-	res.status(404).render("404", { pageTitle: "Page Not Found" });
-});
+// if no routes matchs , this page will be render
+server.use(errorController.getNotFound);
 
 server.listen(3000);
