@@ -19,11 +19,11 @@ class Product {
 			});
 		});
 	}
-	static getAllProduct() {
+	static getAllProduct(callback) {
 		const p = path.join(path.dirname(require.main.filename), "data", "products.json");
 		fs.readFile(p, (err, content) => {
-			if (err) return [];
-			return JSON.parse(content);
+			if (err) callback([]);
+			callback(JSON.parse(content));
 		});
 	}
 }
