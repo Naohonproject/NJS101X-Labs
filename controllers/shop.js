@@ -1,5 +1,6 @@
 /** @format */
 
+const { findById } = require("../models/product");
 const Product = require("../models/product");
 
 exports.getProducts = (req, res, next) => {
@@ -39,6 +40,13 @@ exports.getCart = (req, res, next) => {
   res.render("shop/cart", {
     path: "/cart",
     pageTitle: "Your Cart",
+  });
+};
+
+exports.postCart = (req, res, next) => {
+  const prodId = req.body.productId;
+  Product.findById(prodId, (product) => {
+    console.log(product);
   });
 };
 
