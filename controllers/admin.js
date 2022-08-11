@@ -14,6 +14,7 @@ exports.postAddProduct = (req, res, next) => {
   const price = req.body.price;
   const description = req.body.description;
   const product = new Product(
+    null,
     title,
     imageUrl,
     description,
@@ -42,7 +43,23 @@ exports.getEditProduct = (req, res, next) => {
   });
 };
 
-exports.postEditProduct = (req, res, next) => {};
+exports.postEditProduct = (req, res, next) => {
+  const prodId = req.body.prodId;
+  const title = req.body.title;
+  const imgUrl = req.body.imageUrl;
+  const price = req.body.price;
+  const description = req.body.description;
+
+  const updatedProduct = new Product(
+    prodId,
+    title,
+    imgUrl,
+    description,
+    price
+  );
+  updatedProduct.save();
+  res.redirect("/products");
+};
 
 exports.getProducts = (req, res, next) => {
   Product.fetchAll((products) => {
