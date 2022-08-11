@@ -1,3 +1,4 @@
+const { json } = require("body-parser");
 const fs = require("fs");
 const path = require("path");
 
@@ -12,9 +13,7 @@ module.exports = class Cart {
         cart = JSON.parse(content);
       }
       //   take existing products and find that whether the product we add existed or not
-      const existingProductIndex = cart.products.findIndex(
-        (prod) => prod.id === id
-      );
+      const existingProductIndex = cart.products.findIndex((prod) => prod.id === id);
       const existingProduct = cart.products[existingProductIndex];
       let updatedProduct;
       //   add a new product to cart or increase the quantity if existing
@@ -30,6 +29,25 @@ module.exports = class Cart {
       cart.totalPrice = cart.totalPrice + Number(productPrice);
 
       fs.writeFile(p, JSON.stringify(cart), (err) => {
+        console.log(err);
+      });
+    });
+  }
+  static deleteProduct(id, producPrice) {
+    fs.readFile(p, (err, fileContent) => {
+      if (err) {
+        return;
+      }
+      const cart = JSON.parse(fileContent);
+      const updatedCard = { ...cart };
+
+      const deletedProduct = cart.products.find((product) => product.id === id);
+      const quantityProduct = deletedProduct.qty;
+
+      updatedCard.products = updatedCard.products.filter((product) => product.id !== id);
+      updatedCard.totalPrice = updatedCard.totalPrice - quantityProduct * producPrice;
+
+      fs.writeFile(p, JSON.stringify(updatedCard), (err) => {
         console.log(err);
       });
     });

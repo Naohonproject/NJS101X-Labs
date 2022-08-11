@@ -13,13 +13,7 @@ exports.postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
-  const product = new Product(
-    null,
-    title,
-    imageUrl,
-    description,
-    price
-  );
+  const product = new Product(null, title, imageUrl, description, price);
   product.save();
   res.redirect("/");
 };
@@ -50,13 +44,7 @@ exports.postEditProduct = (req, res, next) => {
   const price = req.body.price;
   const description = req.body.description;
 
-  const updatedProduct = new Product(
-    prodId,
-    title,
-    imgUrl,
-    description,
-    price
-  );
+  const updatedProduct = new Product(prodId, title, imgUrl, description, price);
   updatedProduct.save();
   res.redirect("/products");
 };
@@ -73,4 +61,6 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const ProdId = req.body.productId;
+  Product.deleteById(ProdId);
+  res.redirect("/admin/products ");
 };
