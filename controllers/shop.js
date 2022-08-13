@@ -28,13 +28,15 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
-  Product.fetchAll((products) => {
-    res.render("shop/index", {
-      prods: products,
-      pageTitle: "Shop",
-      path: "/",
-    });
-  });
+  Product.fetchAll()
+    .then(([data, metadata]) => {
+      res.render("shop/index", {
+        prods: data,
+        pageTitle: "Shop",
+        path: "/",
+      });
+    })
+    .catch((error) => console.log(error));
 };
 
 exports.getCart = (req, res, next) => {
@@ -42,7 +44,9 @@ exports.getCart = (req, res, next) => {
     Product.fetchAll((products) => {
       const cartProduct = [];
       for (product of products) {
-        const cartProductData = cart.products.find((prod) => prod.id === product.id);
+        const cartProductData = cart.products.find(
+          (prod) => prod.id === product.id
+        );
         if (cartProductData) {
           cartProduct.push({ productData: product, qty: cartProductData.qty });
         }
