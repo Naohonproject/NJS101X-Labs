@@ -20,7 +20,7 @@ exports.postAddProduct = (req, res, next) => {
     imageUrl: imageUrl,
     description: description,
   })
-    .then((result) => console.log(result))
+    .then((result) => res.redirect("/admin/products"))
     .catch((error) => console.log(error));
 };
 
@@ -81,7 +81,15 @@ exports.getProducts = (req, res, next) => {
 };
 
 exports.postDeleteProduct = (req, res, next) => {
-  const ProdId = req.body.productId;
-  Product.deleteById(ProdId);
-  res.redirect("/admin/products ");
+  const prodId = req.body.productId;
+
+  Product.findById(prodId)
+    .then((product) => {
+      return product.destroy();
+    })
+    .then((result) => {
+      console.log("deleted");
+      res.redirect("/admin/products ");
+    })
+    .catch((error) => console.log(error));
 };
