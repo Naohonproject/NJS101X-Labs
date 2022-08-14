@@ -65,10 +65,40 @@ exports.getCart = (req, res, next) => {
 
 exports.postCart = (req, res, next) => {
   const prodId = req.body.productId;
-  Product.findById(prodId, (product) => {
-    Cart.addProduct(prodId, product.price);
-  });
-  res.redirect("/cart");
+  let fetchedCart;
+  let newQuantity = 1;
+  req.user
+    .getCart() /* take cart of current user */
+    .then((cart) => {
+      fetchedCart = cart; /*asign cart for a variable to reuse */
+      return cart.getProducts({
+        where: { id: prodId },
+      }); /**get the product with id equal to prodId and return to be chained */
+    })
+    .then((products) => {
+      /**retrive products in the previous then */
+      let product; /**this logic for check whether product existed or not */
+      // if the product was existed in the card , not add it to cart anymore, instead increase the quantity in the cartitem
+      if (products.length > 0) {
+        product = products[0];
+      }
+
+      if (product) {
+      }
+
+      // if product was not existed , then find that product in the Product table then add it into cartItem table
+      return Product.findById(prodId);
+    })
+    .then((product) => {
+      // receive the product by the promise of the previous then, add to the cart by call the existing cart by fetchedCard and addProduct
+      return fetchedCart.addProduct(product, {
+        through: { quantity: newQuantity },
+      });
+    })
+    .then(() => {
+      res.redirect("/cart");
+    })
+    .catch((err) => console.log(err));
 };
 
 exports.postCartDelete = (req, res, next) => {
