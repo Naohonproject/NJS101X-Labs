@@ -82,11 +82,14 @@ exports.postCart = (req, res, next) => {
       if (products.length > 0) {
         product = products[0];
       }
-
+      // if product is existed in the current cart, return that product and increase of quantity 1 unit
       if (product) {
+        const oldQuantity = product.cartItem.quantity;
+        newQuantity = oldQuantity + 1;
+        return product;
       }
 
-      // if product was not existed , then find that product in the Product table then add it into cartItem table
+      // if product was not existed , then find that product in the Product table then add it into cartItem table, this time quantity is jus initial with value is 1
       return Product.findById(prodId);
     })
     .then((product) => {
