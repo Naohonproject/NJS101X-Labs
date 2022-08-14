@@ -49,16 +49,18 @@ exports.getCart = (req, res, next) => {
   req.user
     .getCart()
     .then((cart) => {
-      return cart.getProduct();
+      return cart
+        .getProducts()
+        .then((products) => {
+          res.render("shop/cart", {
+            path: "/cart",
+            pageTitle: "Your Cart",
+            products: products,
+          });
+        })
+        .catch((err) => console.log(err));
     })
-    .then((products) => {
-      res.render("shop/cart", {
-        path: "/cart",
-        pageTitle: "Your Cart",
-        products: products,
-      });
-    })
-    .catch((error) => console.log(error));
+    .catch((err) => console.log(err));
 };
 
 exports.postCart = (req, res, next) => {
