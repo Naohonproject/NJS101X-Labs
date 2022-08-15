@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 const app = express();
 
 const errorController = require("./controllers/error");
-const mongoConnect = require("./util/database");
+const mongoConnect = require("./util/database").mongoConnect;
 
 app.set("view engine", "ejs");
 app.set("views", "views");
@@ -23,6 +23,7 @@ app.use((req, res, next) => {
   //     next();
   //   })
   //   .catch((error) => console.log(error));
+  next();
 });
 
 app.use("/admin", adminRoutes);
