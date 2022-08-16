@@ -78,17 +78,12 @@ exports.getProducts = (req, res, next) => {
     .catch((error) => console.log(error));
 };
 
-// exports.postDeleteProduct = (req, res, next) => {
-//   const prodId = req.body.productId;
+exports.postDeleteProduct = (req, res, next) => {
+  const prodId = req.body.productId;
 
-//   Product.findById(prodId)
-//     .then((product) => {
-//       return product.destroy();
-//     })
-//     .then((result) => {
-//       console.log("deleted");
-//       console.log(result.dataValues);
-//       res.redirect("/admin/products ");
-//     })
-//     .catch((error) => console.log(error));
-// };
+  Product.deleteById(prodId)
+    .then(() => {
+      res.redirect("/admin/products ");
+    })
+    .catch((error) => console.log(error));
+};
