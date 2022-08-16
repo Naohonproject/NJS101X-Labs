@@ -18,12 +18,8 @@ exports.getProducts = (req, res, next) => {
 
 exports.getProduct = (req, res, next) => {
   const prodId = req.params.prodId;
-  Product.findAll({
-    where: {
-      id: prodId,
-    },
-  })
-    .then(([product]) => {
+  Product.findById(prodId)
+    .then((product) => {
       res.render("shop/product-detail", {
         product: product,
         pageTitle: product.title,
