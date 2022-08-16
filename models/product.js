@@ -14,16 +14,23 @@ class Product {
     const db = getDb();
     let dbOp;
     if (this._id) {
-      dbOp = db.collection("product").updateOne(
+      /** check that if instance that call save whether exist or not
+       * if it existed, update it otherwise add it to Database
+       */
+      dbOp = db.collection("products").updateOne(
         {
-          _id: new mongodb.ObjectId(this._id),
+          _id: this._id,
+          /** filter to find the document to update */
         },
-        { $set: this }
-      ); /**return a promist */
+        {
+          $set: this,
+        } /** choose feilds to be updated, if update all of feilds, $set : this */
+      ); /**return a promise */
     } else {
-      dbOp = db.collection("product").insertOne(this);
+      /** this (instance of Product )  not exist yet => logic to add it to db when call save()*/
+      dbOp = db.collection("products").insertOne(this);
     }
-    return dbOp
+    return dbOp /** return dbOp, a promise */
       .then((result) => {
         console.log(result);
       })
