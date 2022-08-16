@@ -16,11 +16,11 @@ router.get("/products", adminController.getProducts);
 router.post("/add-product", adminController.postAddProduct);
 
 // /admin/edit-product/:productId => GET
-// router.get("/edit-product/:productId", adminController.getEditProduct);
+router.get("/edit-product/:productId", adminController.getEditProduct);
 
 // /admin/edit-produc => POST
 
-// router.post("/edit-product", adminController.postEditProduct);
+router.post("/edit-product", adminController.postEditProduct);
 
 // router.post("/delete-product", adminController.postDeleteProduct);
 
