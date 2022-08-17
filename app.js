@@ -21,6 +21,8 @@ app.use((req, res, next) => {
   User.findById("62fc0ed28b75ff34465120a9")
     .then((user) => {
       req.user = new User(user.name, user.email, user.cart, user._id);
+      console.log(user);
+      console.log(req.user);
       next();
     })
     .catch((error) => console.log(error));
