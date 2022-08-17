@@ -64,7 +64,6 @@ class User {
       .find({ _id: { $in: productIds } })
       .toArray()
       .then((products) => {
-        console.log(products);
         return products.map((product) => {
           return {
             ...product,
@@ -102,6 +101,22 @@ class User {
         $set: { cart: { items: updatedCartIems } },
       }
     );
+  }
+
+  addOrder() {
+    const db = getDb();
+    return db
+      .collection("orders")
+      .insertOne(this.cart)
+      .then(() => {
+        this.cart = { items: [] };
+        return db.collection("users").updateOne(
+          { _id: new mongodb.ObjectId(this._id) },
+          {
+            $set: { cart: { items: [] } },
+          }
+        );
+      });
   }
 }
 module.exports = User;
