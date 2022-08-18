@@ -97,17 +97,21 @@ exports.postOrder = (req, res, next) => {
       return order.save();
     })
     .then((orders) => {
-      res.render("shop/orders", {
-        path: "/orders",
-        pageTitle: "Your Orders",
-        orders: orders,
-      });
+      return req.user.clearCart();
+    })
+    .then(() => {
+      res.redirect("/order");
     })
     .catch((error) => console.log(error));
 };
 
 exports.getOrders = (req, res, next) => {
   req.user.getOrders();
+  res.render("shop/orders", {
+    path: "/orders",
+    pageTitle: "Your Orders",
+    orders: orders,
+  });
 };
 
 exports.getCheckout = (req, res, next) => {
