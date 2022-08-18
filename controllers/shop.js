@@ -96,7 +96,7 @@ exports.postOrder = (req, res, next) => {
       });
       return order.save();
     })
-    .then((orders) => {
+    .then(() => {
       return req.user.clearCart();
     })
     .then(() => {
@@ -106,12 +106,17 @@ exports.postOrder = (req, res, next) => {
 };
 
 exports.getOrders = (req, res, next) => {
-  req.user.getOrders();
-  res.render("shop/orders", {
-    path: "/orders",
-    pageTitle: "Your Orders",
-    orders: orders,
-  });
+  Order.find({ "user.userId": req.user._id })
+    .then((orders) => {
+      res.render("shop/orders", {
+        path: "/orders",
+        pageTitle: "Your Orders",
+        orders: orders,
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 };
 
 exports.getCheckout = (req, res, next) => {
