@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
+/** make a schema  think of it such a blueprint for our Model */
 const productSchema = new Schema({
   title: {
     type: String,
@@ -12,14 +13,17 @@ const productSchema = new Schema({
     required: true,
   },
   description: {
-    type: string,
+    type: String,
     required: true,
   },
   imageUrl: {
-    type: string,
+    type: String,
     required: true,
   },
 });
+
+// exprort our model
+module.exports = mongoose.model("Product", productSchema);
 
 // const { getDb } = require("../util/database");
 // const mongodb = require("mongodb");

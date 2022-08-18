@@ -1,6 +1,5 @@
 /** @format */
 
-const { findById } = require("../models/product");
 const Product = require("../models/product");
 
 exports.getProducts = (req, res, next) => {
