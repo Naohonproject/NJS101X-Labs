@@ -5,6 +5,7 @@ exports.getAddProduct = (req, res, next) => {
     pageTitle: "Add Product",
     path: "/admin/add-product",
     editing: false,
+    isAuthenticated: req.isAuthenticated,
   });
 };
 
@@ -44,6 +45,7 @@ exports.getEditProduct = (req, res, next) => {
         path: "/admin/edit-product",
         editing: editMode,
         product: product,
+        isAuthenticated: req.isAuthenticated,
       });
     })
     .catch((error) => console.log(error));
@@ -74,14 +76,13 @@ exports.postEditProduct = (req, res, next) => {
 
 exports.getProducts = (req, res, next) => {
   Product.find()
-    // .select("title price -_id")
-    // .populate("userId", "name -_id")
     .then((products) => {
       console.log(products);
       res.render("admin/products", {
         prods: products,
         pageTitle: "Admin Products",
         path: "/admin/products",
+        isAuthenticated: req.isAuthenticated,
       });
     })
     .catch((error) => console.log(error));
