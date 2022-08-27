@@ -1,4 +1,5 @@
 const User = require("../models/user");
+const bscrypt = require("bcryptjs");
 
 exports.getLogIn = (req, res, next) => {
   res.render("auth/login", {
@@ -50,13 +51,16 @@ exports.postSignUp = (req, res, next) => {
       if (userDoc) {
         return res.redirect("/");
       }
-      // if userDoc(undefined). create a new user
+      // enscrypting the password and return a promise to be chained
+      return bscrypt.hash(password, 12);
+    })
+    .then((enscryptedPassword) => {
+      // if userDoc(undefined). create a new user with enscrypted password
       const user = new User({
         email: email,
-        password: password,
+        password: enscryptedPassword,
         cart: { items: [] },
       });
-
       return user.save();
     })
     .then((result) => {
