@@ -26,6 +26,10 @@ const AuthRouter = require("./routes/auth");
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
+
+// let we use session middleware to create a session in server and store that session to store(this case we config it to save on mongodb)
+// this session will always be create and by default it have key cookie to config the cookie that will be set on header of res
+// if we not save data on session, session will not be save and sessionId won't set on respons header as cookie
 app.use(
   session({
     secret: "my secret",
@@ -35,7 +39,15 @@ app.use(
   })
 );
 
+// use this middle ware to sign a session data, this alway make session alway have key value with key csrfSecret, then we pass it to view when
+// render view, this value exist in view, then this session still hold that value, then when post request is sent to server, includes that token(csrfSecret)
+// we can check that to be protect the request to our server from CSRF ATTACH(some hacker fake our website request to our server, because user
+// hold sessionID in cookie when a session still exist, so that we need user can be access database if the request(not get request) must be from
+//  our view(our website) )
 app.use(csrfProtection);
+// we use to save some data in session just in one more request, just the next request(next request of the request we response), after that request
+// this data will be free in session
+// this will make a data save in sesssion with key : flash
 app.use(flash());
 
 app.use((req, res, next) => {
