@@ -2,10 +2,11 @@ const User = require("../models/user");
 const bscrypt = require("bcryptjs");
 
 exports.getLogIn = (req, res, next) => {
+  console.log(req.session);
   res.render("auth/login", {
     pageTitle: "log In",
     path: "/login",
-    isAuthenticated: false,
+    errorMessage: req.flash("error"),
   });
 };
 
@@ -17,6 +18,7 @@ exports.postLogIn = (req, res, next) => {
     .then((user) => {
       // user with input email not existed in db, redirect to log in page, return that and the below code will not be run,if not code excute normally
       if (!user) {
+        req.flash("error", "Invalid email or Password");
         return res.redirect("/login");
       }
       // this func compare input password to hashed password(was store in db with user mail) return a promise , with boolen go into then , true if match, false is not matching
@@ -91,6 +93,5 @@ exports.getSignUp = (req, res, next) => {
   res.render("auth/signup", {
     pageTitle: "Sign up",
     path: "/signup",
-    isAuthenticated: false,
   });
 };
