@@ -52,19 +52,20 @@ exports.postSignUp = (req, res, next) => {
         return res.redirect("/");
       }
       // enscrypting the password and return a promise to be chained
-      return bscrypt.hash(password, 12);
-    })
-    .then((enscryptedPassword) => {
-      // if userDoc(undefined). create a new user with enscrypted password
-      const user = new User({
-        email: email,
-        password: enscryptedPassword,
-        cart: { items: [] },
-      });
-      return user.save();
-    })
-    .then((result) => {
-      res.redirect("/login");
+      return bscrypt
+        .hash(password, 12)
+        .then((enscryptedPassword) => {
+          // if userDoc(undefined). create a new user with enscrypted password
+          const user = new User({
+            email: email,
+            password: enscryptedPassword,
+            cart: { items: [] },
+          });
+          return user.save();
+        })
+        .then((result) => {
+          res.redirect("/login");
+        });
     })
     .catch((error) => console.log(error));
 };
