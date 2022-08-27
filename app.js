@@ -1,11 +1,10 @@
 const path = require("path");
-
 const express = require("express");
 const bodyParser = require("body-parser");
-
 const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoDbStore = require("connect-mongodb-session")(session);
+const csrf = require("csurf");
 
 const errorController = require("./controllers/error");
 const User = require("./models/user");
@@ -15,6 +14,7 @@ const MONGDB_URI =
 
 const app = express();
 const store = new MongoDbStore({ uri: MONGDB_URI, collection: "sessions" });
+const csrfProtection = csrf();
 
 app.set("view engine", "ejs");
 app.set("views", "views");
@@ -33,6 +33,8 @@ app.use(
     store: store,
   })
 );
+
+app.use(csrfProtection);
 
 app.use((req, res, next) => {
   // this statement check if incoming request(with cookie that includes a connect.sid) is existed or not, if not, call next() to
