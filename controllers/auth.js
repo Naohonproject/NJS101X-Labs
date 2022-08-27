@@ -39,6 +39,7 @@ exports.postLogIn = (req, res, next) => {
               res.redirect("/");
             });
           }
+          req.flash("error", "Invalid email or Password");
           res.redirect("/login");
         })
         .catch((error) => {
@@ -74,7 +75,8 @@ exports.postSignUp = (req, res, next) => {
     .then((userDoc) => {
       /** if userDoc is exist(not undefined), not generate new user */
       if (userDoc) {
-        return res.redirect("/");
+        req.flash("error", "This email was registed for an existed accoutn");
+        return res.redirect("/signup");
       }
       // enscrypting the password and return a promise to be chained
       return bscrypt
@@ -96,8 +98,16 @@ exports.postSignUp = (req, res, next) => {
 };
 
 exports.getSignUp = (req, res, next) => {
+  let message = req.flash("error");
+
+  if (message.length > 0) {
+    message = message[0];
+  } else {
+    message = null;
+  }
   res.render("auth/signup", {
     pageTitle: "Sign up",
     path: "/signup",
+    errorMessage: message,
   });
 };
