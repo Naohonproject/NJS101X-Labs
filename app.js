@@ -35,9 +35,19 @@ app.use(
 );
 
 app.use((req, res, next) => {
+  // this statement check if incoming request(with cookie that includes a connect.sid) is existed or not, if not, call next() to
+  // going to other middleware, because it reuturn next() so , below code will not excute
+  /**
+   * req.session will be run like , take the req, with cookie , check where that cookie holds any session in server or not
+   */
   if (!req.session.user) {
     return next();
   }
+  // if request with the session cookie match a current session(saved on server , might be memory or database) then find user in User collection
+  // then add it to this incoming request and next() to next to other middileware like router, this statement req.user = user just can be do if
+  // whe find a session in server that has session_id with the session_id cookie hold, this make sense because just can be access to some router
+  // and data if the user was log in correctly, and the session will be there(in server) util we sign out, so if the other request(that will be
+  // sent will cookie hold the request id will be right util user sign out)
   User.findById(req.session.user._id)
     .then((user) => {
       req.user = user;

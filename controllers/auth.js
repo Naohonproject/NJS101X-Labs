@@ -10,16 +10,33 @@ exports.getLogIn = (req, res, next) => {
 };
 
 exports.postLogIn = (req, res, next) => {
-  User.findById("62fe83f1074264469d321391")
+  const email = req.body.email;
+  const password = req.body.password;
+
+  User.findOne({ email: email })
     .then((user) => {
-      req.session.isLoggedIn = true;
-      req.session.user = user;
-      // we did this because, req.session will save session to mongodb async, if we redirect to fast , before the save work to db is not done yet, then
-      // res will not receive the date from session that is saved on db, to deal with that, we add callback on req.session.save(), this
-      // will make res just be sent when sestion was adding to db
-      req.session.save(() => {
-        res.redirect("/");
-      });
+      // user with input email not existed in db, redirect to log in page, return that and the below code will not be run,if not code excute normally
+      if (!user) {
+        return res.redirect("/login");
+      }
+      // this func compare input password to hashed password(was store in db with user mail) return a promise , with boolen go into then , true if match, false is not matching
+      bscrypt
+        .compare(password, user.password)
+        .then((isMatch) => {
+          if (isMatch) {
+            // if match , create a session for this user(the match user with matched email and password)
+            req.session.isLoggedIn = true;
+            req.session.user = user;
+            return req.session.save(() => {
+              res.redirect("/");
+            });
+          }
+          res.redirect("/login");
+        })
+        .catch((error) => {
+          console.log(error);
+          res.redirect("/login");
+        });
     })
     .catch((err) => console.log(err));
 };
