@@ -88,6 +88,7 @@ exports.postOrder = (req, res, next) => {
       });
       const order = new Order({
         user: {
+          email: req.user.email,
           userId: req.user,
         },
         products: products,
@@ -98,7 +99,7 @@ exports.postOrder = (req, res, next) => {
       return req.user.clearCart();
     })
     .then(() => {
-      res.redirect("/order");
+      res.redirect("/orders");
     })
     .catch((error) => console.log(error));
 };
