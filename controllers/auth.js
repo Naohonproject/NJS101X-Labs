@@ -33,6 +33,16 @@ exports.postLogIn = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
 
+  const error = validationResult(req);
+
+  if (!error.isEmpty()) {
+    return res.status(422).render("auth/login", {
+      pageTitle: "login",
+      path: "/login",
+      errorMessage: error.array()[0].msg,
+    });
+  }
+
   User.findOne({ email: email })
     .then((user) => {
       // user with input email not existed in db, redirect to log in page, return that and the below code will not be run,if not code excute normally
@@ -86,6 +96,11 @@ exports.postSignUp = (req, res, next) => {
       pageTitle: "Sign up",
       path: "/signup",
       errorMessage: error.array()[0].msg,
+      oldInput: {
+        password: password,
+        email: email,
+        confirmPassword: confirmPassword,
+      },
     });
   }
 
@@ -136,6 +151,7 @@ exports.getSignUp = (req, res, next) => {
     pageTitle: "Sign up",
     path: "/signup",
     errorMessage: message,
+    oldInput: { email: "", password: "", confirmPassword: "" },
   });
 };
 
