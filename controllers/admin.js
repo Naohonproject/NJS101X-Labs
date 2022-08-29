@@ -45,7 +45,6 @@ exports.postAddProduct = (req, res, next) => {
     description: description,
     imageUrl: imageUrl,
     userId: req.user._id,
-    _id: moongose.Types.ObjectId("630992188a016327753660b2"),
   });
   product
     .save()
