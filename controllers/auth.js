@@ -75,14 +75,17 @@ exports.postSignUp = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
   const confirmPassword = req.body.confirmPassword;
+  // validationResult is a function by express-validator package, this take incoming request and check the result of error by the before middleware
+  // return and error object
   const error = validationResult(req);
 
+  // check whether there is any error or not, if incoming request go into before middleware and incoming request was assigned the validated error
+  // we re-render signup page with error message we set in the checking middleware(middleware we set right in front of postSignUp middle ware)
   if (!error.isEmpty()) {
-    console.log(error.array());
     return res.status(422).render("auth/signup", {
       pageTitle: "Sign up",
       path: "/signup",
-      errorMessage: error.array(),
+      errorMessage: error.array()[0].msg,
     });
   }
 

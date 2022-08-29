@@ -12,7 +12,16 @@ router.post("/login", authController.postLogIn);
 
 router.post("/logout", authController.postLogOut);
 
-router.post("/signup", check("email").isEmail(), authController.postSignUp);
+// add middle ware to check the incoming request data in form, use express-validator , then this package
+// check that is there any invalid data in the feild in req data form, if req has wrong validating data
+// it will be send to the next middleware.we can customize and chain the middleware to check and custom error message
+router.post(
+  "/signup",
+  check("email")
+    .isEmail()
+    .withMessage("The email is wrong,enter the valid email"),
+  authController.postSignUp
+);
 
 router.get("/reset", authController.getReset);
 
