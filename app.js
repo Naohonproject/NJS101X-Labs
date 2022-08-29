@@ -49,6 +49,11 @@ app.use(csrfProtection);
 // this data will be free in session
 // this will make a data save in sesssion with key : flash
 app.use(flash());
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
 
 app.use((req, res, next) => {
   // this statement check if incoming request(with cookie that includes a connect.sid) is existed or not, if not, call next() to
@@ -64,6 +69,7 @@ app.use((req, res, next) => {
   // whe find a session in server that has session_id with the session_id cookie hold, this make sense because just can be access to some router
   // and data if the user was log in correctly, and the session will be there(in server) util we sign out, so if the other request(that will be
   // sent will cookie hold the request id will be right util user sign out)
+
   User.findById(req.session.user._id)
     .then((user) => {
       if (!user) {
@@ -73,14 +79,8 @@ app.use((req, res, next) => {
       next();
     })
     .catch((err) => {
-      throw new Error(error);
+      next(new Error(err));
     });
-});
-
-app.use((req, res, next) => {
-  res.locals.isAuthenticated = req.session.isLoggedIn;
-  res.locals.csrfToken = req.csrfToken();
-  next();
 });
 
 app.use("/admin", adminRoutes);
@@ -92,7 +92,11 @@ app.get("/500", errorController.get500);
 app.use(errorController.get404);
 
 app.use((error, req, res, next) => {
-  res.redirect("/500");
+  res.status(500).render("500", {
+    pageTitle: "Error",
+    path: "/500",
+    isAuthenticated: req.session.isLoggedIn,
+  });
 });
 mongoose
   .connect(MONGDB_URI)
