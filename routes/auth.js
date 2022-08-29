@@ -19,7 +19,13 @@ router.post(
   "/signup",
   check("email")
     .isEmail()
-    .withMessage("The email is wrong,enter the valid email"),
+    .withMessage("The email is wrong,enter the valid email")
+    .custom((value, { req }) => {
+      if (value === "ltb.198x@outlook.com") {
+        throw new Error("This email address is forbidden");
+      }
+      return true;
+    }),
   authController.postSignUp
 );
 
