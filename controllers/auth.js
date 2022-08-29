@@ -26,6 +26,11 @@ exports.getLogIn = (req, res, next) => {
     pageTitle: "log In",
     path: "/login",
     errorMessage: message,
+    oldInput: {
+      email: "",
+      password: "",
+    },
+    validationErrors: [],
   });
 };
 
@@ -40,6 +45,11 @@ exports.postLogIn = (req, res, next) => {
       pageTitle: "login",
       path: "/login",
       errorMessage: error.array()[0].msg,
+      oldInput: {
+        email: email,
+        password: password,
+      },
+      validationErrors: error.array(),
     });
   }
 
@@ -47,8 +57,16 @@ exports.postLogIn = (req, res, next) => {
     .then((user) => {
       // user with input email not existed in db, redirect to log in page, return that and the below code will not be run,if not code excute normally
       if (!user) {
-        req.flash("error", "Invalid email or Password");
-        return res.redirect("/login");
+        return res.status(422).render("auth/login", {
+          pageTitle: "login",
+          path: "/login",
+          errorMessage: "Invalid email or Password",
+          oldInput: {
+            email: email,
+            password: password,
+          },
+          validationErrors: [{ param: "email" }, { param: "password" }],
+        });
       }
       // this func compare input password to hashed password(was store in db with user mail) return a promise , with boolen go into then , true if match, false is not matching
       bscrypt
@@ -62,8 +80,16 @@ exports.postLogIn = (req, res, next) => {
               res.redirect("/");
             });
           }
-          req.flash("error", "Invalid email or Password");
-          res.redirect("/login");
+          return res.status(422).render("auth/login", {
+            pageTitle: "login",
+            path: "/login",
+            errorMessage: "Invalid email or Password",
+            oldInput: {
+              email: email,
+              password: password,
+            },
+            validationErrors: [{ param: "email" }, { param: "password" }],
+          });
         })
         .catch((error) => {
           console.log(error);
