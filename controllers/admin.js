@@ -1,6 +1,6 @@
 const Product = require("../models/product");
 const { validationResult } = require("express-validator");
-const { trusted } = require("mongoose");
+const moongose = require("mongoose");
 
 exports.getAddProduct = (req, res, next) => {
   res.render("admin/edit-product", {
@@ -25,7 +25,7 @@ exports.postAddProduct = (req, res, next) => {
     console.log(error.array());
     return res.status(422).render("admin/edit-product", {
       pageTitle: "Add Product",
-      path: "/admin/edit-product",
+      path: "/admin/add-product",
       editing: false,
       hasError: true,
       product: {
@@ -45,11 +45,14 @@ exports.postAddProduct = (req, res, next) => {
     description: description,
     imageUrl: imageUrl,
     userId: req.user._id,
+    _id: moongose.Types.ObjectId("630992188a016327753660b2"),
   });
   product
     .save()
     .then((result) => res.redirect("/admin/products"))
-    .catch((error) => console.log(error));
+    .catch((error) => {
+      res.redirect("/500");
+    });
 };
 
 exports.getEditProduct = (req, res, next) => {
