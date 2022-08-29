@@ -66,10 +66,15 @@ app.use((req, res, next) => {
   // sent will cookie hold the request id will be right util user sign out)
   User.findById(req.session.user._id)
     .then((user) => {
+      if (!user) {
+        return next();
+      }
       req.user = user;
       next();
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      throw new Error(error);
+    });
 });
 
 app.use((req, res, next) => {
