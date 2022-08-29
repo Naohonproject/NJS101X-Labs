@@ -1,6 +1,6 @@
 const express = require("express");
 const authController = require("../controllers/auth");
-const { check } = require("express-validator");
+const { check, body } = require("express-validator");
 
 const router = express.Router();
 
@@ -17,15 +17,25 @@ router.post("/logout", authController.postLogOut);
 // it will be send to the next middleware.we can customize and chain the middleware to check and custom error message
 router.post(
   "/signup",
-  check("email")
-    .isEmail()
-    .withMessage("The email is wrong,enter the valid email")
-    .custom((value, { req }) => {
-      if (value === "ltb.198x@outlook.com") {
-        throw new Error("This email address is forbidden");
-      }
-      return true;
-    }),
+  [
+    check("email")
+      .isEmail()
+      .withMessage("The email is wrong,enter the valid email")
+      .custom((value, { req }) => {
+        if (value === "ltb.198x@outlook.com") {
+          throw new Error("This email address is forbidden");
+        }
+        return true;
+      }),
+    body(
+      "password",
+      "The password need to be exceed 5 characters , includes number and normal character"
+    )
+      .isLength({
+        min: 5,
+      })
+      .isAlphanumeric(),
+  ],
   authController.postSignUp
 );
 
