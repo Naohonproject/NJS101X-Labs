@@ -97,36 +97,29 @@ exports.postSignUp = (req, res, next) => {
   // result of findOne can be undefined if there is no data match
   // to the condition of that method, then we can get result in
   // arg of then
-  User.findOne({ email: email })
-    .then((userDoc) => {
-      /** if userDoc is exist(not undefined), not generate new user */
-      if (userDoc) {
-        req.flash("error", "This email was registed for an existed accoutn");
-        return res.redirect("/signup");
-      }
-      // enscrypting the password and return a promise to be chained
-      return bscrypt
-        .hash(password, 12)
-        .then((enscryptedPassword) => {
-          // if userDoc(undefined). create a new user with enscrypted password
-          const user = new User({
-            email: email,
-            password: enscryptedPassword,
-            cart: { items: [] },
-          });
-          return user.save();
-        })
-        .then((result) => {
-          res.redirect("/login");
-          // after sign up and dir to login page and send email to notify email was successfully register
-          return transport.sendMail({
-            to: email,
-            from: "sender@gmail.com",
-            subject: "signup succeeded",
-            html: "<h1>Sign up succeeded!</h1>",
-          });
-        })
-        .catch((error) => console.log(error));
+
+  // enscrypting the password and return a promise to be chained
+  // the email exist is checked by the prev middleware, so that when req go to this middleware, email has not existed in the db
+  bscrypt
+    .hash(password, 12)
+    .then((enscryptedPassword) => {
+      // if userDoc(undefined). create a new user with enscrypted password
+      const user = new User({
+        email: email,
+        password: enscryptedPassword,
+        cart: { items: [] },
+      });
+      return user.save();
+    })
+    .then((result) => {
+      res.redirect("/login");
+      // after sign up and dir to login page and send email to notify email was successfully register
+      return transport.sendMail({
+        to: email,
+        from: "sender@gmail.com",
+        subject: "signup succeeded",
+        html: "<h1>Sign up succeeded!</h1>",
+      });
     })
     .catch((error) => console.log(error));
 };

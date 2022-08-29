@@ -1,6 +1,8 @@
 const express = require("express");
 const authController = require("../controllers/auth");
 const { check, body } = require("express-validator");
+const User = require("../models/user");
+const { Promise } = require("sequelize");
 
 const router = express.Router();
 
@@ -21,11 +23,15 @@ router.post(
     check("email")
       .isEmail()
       .withMessage("The email is wrong,enter the valid email")
-      .custom((value, { req }) => {
-        if (value === "ltb.198x@outlook.com") {
-          throw new Error("This email address is forbidden");
-        }
-        return true;
+      .custom((value) => {
+        // this will a promise, this promise will alway reject , then the check middleware will take the error of our promise reject
+        return User.findOne({ email: value }).then((userDoc) => {
+          if (userDoc) {
+            return Promise.reject(
+              "This email was registed for an existed accoutn"
+            );
+          }
+        });
       }),
     body(
       "password",
