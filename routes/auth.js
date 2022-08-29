@@ -13,10 +13,14 @@ router.get("/signup", authController.getSignUp);
 router.post(
   "/login",
   [
-    body("email").isEmail().withMessage("Please enter a valid email address."),
+    body("email")
+      .isEmail()
+      .normalizeEmail()
+      .withMessage("Please enter a valid email address."),
     body("password", "Password has to be valid.")
       .isLength({ min: 5 })
-      .isAlphanumeric(),
+      .isAlphanumeric()
+      .trim(),
   ],
   authController.postLogIn
 );
@@ -41,7 +45,8 @@ router.post(
             );
           }
         });
-      }),
+      })
+      .normalizeEmail(),
     body(
       "password",
       "The password need to be exceed 5 characters , includes number and normal character"
@@ -49,15 +54,18 @@ router.post(
       .isLength({
         min: 5,
       })
-      .isAlphanumeric(),
-    body("confirmPassword").custom((value, { req }) => {
-      if (req.body.password !== value) {
-        throw new Error(
-          "Confirm password not match the password,please try again"
-        );
-      }
-      return true;
-    }),
+      .isAlphanumeric()
+      .trim(),
+    body("confirmPassword")
+      .custom((value, { req }) => {
+        if (req.body.password !== value) {
+          throw new Error(
+            "Confirm password not match the password,please try again"
+          );
+        }
+        return true;
+      })
+      .trim(),
   ],
   authController.postSignUp
 );
