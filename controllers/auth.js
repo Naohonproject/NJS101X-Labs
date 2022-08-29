@@ -2,6 +2,7 @@ const User = require("../models/user");
 const bscrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
+const { validationResult } = require("express-validator");
 
 // use mailtrap to fake send email
 let transport = nodemailer.createTransport({
@@ -74,6 +75,16 @@ exports.postSignUp = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
   const confirmPassword = req.body.confirmPassword;
+  const error = validationResult(req);
+
+  if (!error.isEmpty()) {
+    console.log(error.array());
+    return res.status(422).render("auth/signup", {
+      pageTitle: "Sign up",
+      path: "/signup",
+      errorMessage: error.array(),
+    });
+  }
 
   /** Create new user by the date from sign up form */
   // check whether the email user input existed in db or not
