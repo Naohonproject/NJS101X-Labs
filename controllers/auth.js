@@ -92,6 +92,7 @@ exports.postSignUp = (req, res, next) => {
   // check whether there is any error or not, if incoming request go into before middleware and incoming request was assigned the validated error
   // we re-render signup page with error message we set in the checking middleware(middleware we set right in front of postSignUp middle ware)
   if (!error.isEmpty()) {
+    console.log(error.array());
     return res.status(422).render("auth/signup", {
       pageTitle: "Sign up",
       path: "/signup",
@@ -101,6 +102,7 @@ exports.postSignUp = (req, res, next) => {
         email: email,
         confirmPassword: confirmPassword,
       },
+      validationErrors: error.array(),
     });
   }
 
@@ -152,6 +154,7 @@ exports.getSignUp = (req, res, next) => {
     path: "/signup",
     errorMessage: message,
     oldInput: { email: "", password: "", confirmPassword: "" },
+    validationErrors: [],
   });
 };
 
