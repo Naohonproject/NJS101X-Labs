@@ -1,5 +1,6 @@
 const Product = require("../models/product");
 const { validationResult } = require("express-validator");
+const { trusted } = require("mongoose");
 
 exports.getAddProduct = (req, res, next) => {
   res.render("admin/edit-product", {
@@ -8,6 +9,7 @@ exports.getAddProduct = (req, res, next) => {
     editing: false,
     hasError: false,
     errorMessage: null,
+    validationErrors: [],
   });
 };
 
@@ -33,6 +35,7 @@ exports.postAddProduct = (req, res, next) => {
         price: price,
       },
       errorMessage: error.array()[0].msg,
+      validationErrors: error.array(),
     });
   }
 
@@ -68,6 +71,7 @@ exports.getEditProduct = (req, res, next) => {
         product: product,
         hasError: false,
         errorMessage: null,
+        validationErrors: [],
       });
     })
     .catch((error) => console.log(error));
@@ -79,6 +83,27 @@ exports.postEditProduct = (req, res, next) => {
   const updatedImgUrl = req.body.imageUrl;
   const updatedPrice = req.body.price;
   const updatedDescription = req.body.description;
+
+  const error = validationResult(req);
+
+  if (!error.isEmpty()) {
+    console.log(error.array());
+    return res.status(422).render("admin/edit-product", {
+      pageTitle: "Edit Product",
+      path: "/admin/edit-product",
+      editing: true,
+      hasError: true,
+      product: {
+        title: updatedTitle,
+        imageUrl: updatedImgUrl,
+        description: updatedDescription,
+        price: updatedPrice,
+        _id: prodId,
+      },
+      errorMessage: error.array()[0].msg,
+      validationErrors: error.array(),
+    });
+  }
 
   Product.findById(prodId).then((product) => {
     product.title = updatedTitle;
