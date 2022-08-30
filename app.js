@@ -6,6 +6,7 @@ const session = require("express-session");
 const MongoDbStore = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
 const flash = require("connect-flash");
+const multer = require("multer");
 
 const errorController = require("./controllers/error");
 const User = require("./models/user");
@@ -25,6 +26,7 @@ const shopRoutes = require("./routes/shop");
 const AuthRouter = require("./routes/auth");
 
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(multer({ dest: "image" }).single("image"));
 app.use(express.static(path.join(__dirname, "public")));
 
 // let we use session middleware to create a session in server and store that session to store(this case we config it to save on mongodb)
