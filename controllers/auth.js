@@ -286,38 +286,27 @@ exports.postNewPassword = (req, res, next) => {
   const userId = req.body.userId;
   const passwordToken = req.body.passwordToken;
   const currentPassword = req.body.confirmPassword;
+  let resetUser;
 
   // find the user in db who matches these below properties
+
   User.findOne({
     resetToken: passwordToken,
     _id: userId,
     resetTokenExpiration: { $gt: Date.now() },
   })
     .then((user) => {
-      // check the current password in db vs the current password we want user type to confirm whether user remember password or not
-      bscrypt
-        .compare(currentPassword, user.password)
-        .then((isMatch) => {
-          if (isMatch) {
-            // if match , create a session for this user(the match user with matched email and password)
-            return bscrypt.hash(newPassword, 12);
-          }
-          req.flash(
-            "error",
-            "Your confirm password not match current password"
-          );
-          res.redirect("/login");
-        })
-        .then((hashedPassword) => {
-          user.password = hashedPassword;
-          user.resetToken = undefined;
-          user.resetTokenExpiration = undefined;
-          return user.save();
-        })
-        .then((result) => {
-          res.redirect("/login");
-        })
-        .catch((error) => console.log(error));
+      resetUser = user;
+      return bscrypt.hash(newPassword, 12);
+    })
+    .then((hashedPassword) => {
+      resetUser.password = hashedPassword;
+      resetUser.resetToken = undefined;
+      resetUser.resetTokenExpiration = undefined;
+      return resetUser.save();
+    })
+    .then((result) => {
+      res.redirect("/login");
     })
     .catch((error) => {
       req.flash(
