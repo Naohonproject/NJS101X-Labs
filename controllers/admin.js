@@ -78,10 +78,10 @@ exports.getEditProduct = (req, res, next) => {
         validationErrors: [],
       });
     })
-    .catch((error) => {
-      const error = new Error(err);
-      error.httpStatusCode = 500;
-      return next(error);
+    .catch((err) => {
+      const notFoundError = new Error(err);
+      notFoundError.httpStatusCode = 500;
+      return next(notFoundError);
     });
 };
 
@@ -123,10 +123,10 @@ exports.postEditProduct = (req, res, next) => {
       .then(() => {
         res.redirect("/products");
       })
-      .catch((error) => {
-        const error = new Error(err);
-        error.httpStatusCode = 500;
-        return next(error);
+      .catch((err) => {
+        const catchedError = new Error(err);
+        catchedError.httpStatusCode = 500;
+        return next(catchedError);
       });
   });
 };
@@ -141,10 +141,10 @@ exports.getProducts = (req, res, next) => {
         path: "/admin/products",
       });
     })
-    .catch((error) => {
-      const error = new Error(err);
-      error.httpStatusCode = 500;
-      return next(error);
+    .catch((err) => {
+      const catchedError = new Error(err);
+      catchedError.httpStatusCode = 500;
+      return next(catchedError);
     });
 };
 
@@ -155,9 +155,9 @@ exports.postDeleteProduct = (req, res, next) => {
     .then(() => {
       res.redirect("/admin/products");
     })
-    .catch((error) => {
-      const error = new Error(err);
-      error.httpStatusCode = 500;
-      return next(error);
+    .catch((err) => {
+      const catchedError = new Error(err);
+      catchedError.httpStatusCode = 500;
+      return next(catchedError);
     });
 };

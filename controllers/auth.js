@@ -91,7 +91,7 @@ exports.postLogIn = (req, res, next) => {
             validationErrors: [{ param: "email" }, { param: "password" }],
           });
         })
-        .catch((error) => {
+        .catch((err) => {
           const error = new Error(err);
           error.httpStatusCode = 500;
           return next(error);
@@ -165,7 +165,7 @@ exports.postSignUp = (req, res, next) => {
         html: "<h1>Sign up succeeded!</h1>",
       });
     })
-    .catch((error) => {
+    .catch((err) => {
       const error = new Error(err);
       error.httpStatusCode = 500;
       return next(error);
@@ -240,7 +240,7 @@ exports.postReset = (req, res, next) => {
           `,
         });
       })
-      .catch((error) => {
+      .catch((err) => {
         const error = new Error(err);
         error.httpStatusCode = 500;
         return next(error);
@@ -274,7 +274,7 @@ exports.getNewPassword = (req, res, next) => {
         userId: user._id.toString(),
       });
     })
-    .catch((error) => {
+    .catch((err) => {
       const error = new Error(err);
       error.httpStatusCode = 500;
       return next(error);
