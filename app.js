@@ -18,6 +18,17 @@ const app = express();
 const store = new MongoDbStore({ uri: MONGDB_URI, collection: "sessions" });
 const csrfProtection = csrf();
 
+const dateStr = new Date().toISOString().replace(/:/g, "-");
+
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "images");
+  },
+  filename: (req, file, cb) => {
+    cb(null, dateStr + "-" + file.originalname);
+  },
+});
+
 app.set("view engine", "ejs");
 app.set("views", "views");
 
@@ -25,13 +36,6 @@ const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const AuthRouter = require("./routes/auth");
 
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(multer({ dest: "image" }).single("image"));
-app.use(express.static(path.join(__dirname, "public")));
-
-// let we use session middleware to create a session in server and store that session to store(this case we config it to save on mongodb)
-// this session will always be create and by default it have key cookie to config the cookie that will be set on header of res
-// if we not save data on session, session will not be save and sessionId won't set on respons header as cookie
 app.use(
   session({
     secret: "my secret",
@@ -41,11 +45,20 @@ app.use(
   })
 );
 
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(multer({ storage: fileStorage }).single("image"));
+app.use(express.static(path.join(__dirname, "public")));
+
+// let we use session middleware to create a session in server and store that session to store(this case we config it to save on mongodb)
+// this session will always be create and by default it have key cookie to config the cookie that will be set on header of res
+// if we not save data on session, session will not be save and sessionId won't set on respons header as cookie
+
 // use this middle ware to sign a session data, this alway make session alway have key value with key csrfSecret, then we pass it to view when
 // render view, this value exist in view, then this session still hold that value, then when post request is sent to server, includes that token(csrfSecret)
 // we can check that to be protect the request to our server from CSRF ATTACH(some hacker fake our website request to our server, because user
 // hold sessionID in cookie when a session still exist, so that we need user can be access database if the request(not get request) must be from
 //  our view(our website) )
+
 app.use(csrfProtection);
 // we use to save some data in session just in one more request, just the next request(next request of the request we response), after that request
 // this data will be free in session
@@ -94,6 +107,10 @@ app.get("/500", errorController.get500);
 app.use(errorController.get404);
 
 app.use((error, req, res, next) => {
+  console.log("test");
+  console.log(req.session);
+  console.log(error);
+
   res.status(500).render("500", {
     pageTitle: "Error",
     path: "/500",
