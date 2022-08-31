@@ -35,6 +35,7 @@ exports.postAddProduct = (req, res, next) => {
     });
   }
 
+  // we save the file in the dictionary in the source and save the path to it in db, imageUrl
   const imageUrl = image.path;
 
   const errors = validationResult(req);
