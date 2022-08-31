@@ -174,23 +174,18 @@ exports.getInvoice = (req, res, next) => {
       const invoiceName = "invoice" + "-" + orderId + ".pdf";
       const invoicePath = path.join("data", "invoices", invoiceName);
 
-      // use fs to read a file asyn and send it back along with response
-      fs.readFile(invoicePath, (error, data) => {
-        if (error) {
-          return next(error);
-        }
-        // set some header for response
-        // set type of contend we give back to client
+      // case just tiny data in file, the fs.readfile is ok, but the file is large
+      // the server have to read all of that and store in memory of server
+      // if server get thousand of request in a time, sometime the memory will
+      // over flow.Then we can improve this problem by readFile as stream
 
-        res.setHeader("Content-Type", "application/pdf");
-        res.setHeader(
-          "Content-Disposition",
-          'inline; filename="' + invoiceName + '"'
-        );
-        // until res.send(something_we_want_to_send_back)
-        // we can set up for response
-        res.send(data);
-      });
+      const file = fs.createReadStream(invoicePath);
+      es.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-Disposition",
+        'inline; filename="' + invoiceName + '"'
+      );
+      file.pipe(res);
     })
     .catch((err) => next(err));
 };
