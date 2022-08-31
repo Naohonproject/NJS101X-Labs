@@ -61,6 +61,9 @@ app.use(
   multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
 );
 app.use(express.static(path.join(__dirname, "public")));
+// we save file in images like the static file then cause the db save the path
+// like image/... so that we need to concat the image names with images folder to match the url /images/image_name
+app.use("/images", express.static(path.join(__dirname, "images")));
 
 // let we use session middleware to create a session in server and store that session to store(this case we config it to save on mongodb)
 // this session will always be create and by default it have key cookie to config the cookie that will be set on header of res
