@@ -154,25 +154,43 @@ exports.getCheckout = (req, res, next) => {
 
 exports.getInvoice = (req, res, next) => {
   const orderId = req.params.orderId;
-  const invoiceName = "invoice" + "-" + orderId + ".pdf";
 
-  const invoicePath = path.join("data", "invoices", invoiceName);
+  // this logic let we authorize just logged in user is able to reach the
+  // file from it's session
+  Order.findById(orderId)
+    .then((order) => {
+      if (!order) {
+        return next(new Error("no order is found"));
+      }
 
-  // use fs to read a file asyn and send it back along with response
-  fs.readFile(invoicePath, (error, data) => {
-    if (error) {
-      return next(error);
-    }
-    // set some header for response
-    // set type of contend we give back to client
+      if (req.user._id.toString() !== order.user.userId.toString()) {
+        return next(new Error("Unauthorized"));
+      }
+      // if found the order by it's id , then implement logic to download the file
+      // otherwise , unloggedin user or other user can not reach that file
+      // because we check and throw that error to the error middleware already
+      // even though user may have the url that route to our controller, but
+      // we add the logic to check whether the req.user is match to the user.userId
+      const invoiceName = "invoice" + "-" + orderId + ".pdf";
+      const invoicePath = path.join("data", "invoices", invoiceName);
 
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader(
-      "Content-Disposition",
-      'inline; filename="' + invoiceName + '"'
-    );
-    // until res.send(something_we_want_to_send_back)
-    // we can set up for response
-    res.send(data);
-  });
+      // use fs to read a file asyn and send it back along with response
+      fs.readFile(invoicePath, (error, data) => {
+        if (error) {
+          return next(error);
+        }
+        // set some header for response
+        // set type of contend we give back to client
+
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader(
+          "Content-Disposition",
+          'inline; filename="' + invoiceName + '"'
+        );
+        // until res.send(something_we_want_to_send_back)
+        // we can set up for response
+        res.send(data);
+      });
+    })
+    .catch((err) => next(err));
 };
