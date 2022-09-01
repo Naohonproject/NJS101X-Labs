@@ -44,19 +44,33 @@ exports.getProduct = (req, res, next) => {
 exports.getIndex = (req, res, next) => {
   // receive the query value(page) from the url
   const page = req.query.page;
+  let totalItems;
 
-  // moongose find function return a cursor to each element, then we can implement each of result,
   Product.find()
-    // use skip chain after find to skip the result by logic filter just items that not skip,skip will run and skip the number of result from start
-    // until the number of skip result match (page-1)*ITEMS_PER_PAGE
-    .skip((page - 1) * ITEMS_PER_PAGE)
-    // limit func tell moongose that we just need the ITEMS_PER_PAGE in the result
-    .limit(ITEMS_PER_PAGE)
+    .countDocuments()
+    .then((numberOfProduct) => {
+      totalItems = numberOfProduct;
+      return (
+        Product.find()
+          // use skip chain after find to skip the result by logic filter just items that not skip,skip will run and skip the number of result from start
+          // until the number of skip result match (page-1)*ITEMS_PER_PAGE
+          .skip((page - 1) * ITEMS_PER_PAGE)
+          // limit func tell moongose that we just need the ITEMS_PER_PAGE in the result
+          .limit(ITEMS_PER_PAGE)
+      );
+    })
+    // moongose find function return a cursor to each element, then we can implement each of result,
     .then((products) => {
       res.render("shop/index", {
         prods: products,
         pageTitle: "Shop",
         path: "/",
+        totalProducts: totalItems,
+        hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+        hasPreviousPage: page > 1,
+        nextPage: page + 1,
+        previousPage: page - 1,
+        lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
       });
     })
     .catch((err) => {
