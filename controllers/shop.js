@@ -6,6 +6,8 @@ const fs = require("fs");
 const path = require("path");
 const PDFDocument = require("pdfkit");
 
+const ITEMS_PER_PAGE = 2;
+
 exports.getProducts = (req, res, next) => {
   Product.find()
     .then((products) => {
@@ -40,7 +42,16 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
+  // receive the query value(page) from the url
+  const page = req.query.page;
+
+  // moongose find function return a cursor to each element, then we can implement each of result,
   Product.find()
+    // use skip chain after find to skip the result by logic filter just items that not skip,skip will run and skip the number of result from start
+    // until the number of skip result match (page-1)*ITEMS_PER_PAGE
+    .skip((page - 1) * ITEMS_PER_PAGE)
+    // limit func tell moongose that we just need the ITEMS_PER_PAGE in the result
+    .limit(ITEMS_PER_PAGE)
     .then((products) => {
       res.render("shop/index", {
         prods: products,
