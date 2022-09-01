@@ -4,6 +4,8 @@ const Product = require("../models/product");
 const Order = require("../models/order");
 const fs = require("fs");
 const path = require("path");
+const PDFDocument = require("pdfkit");
+
 exports.getProducts = (req, res, next) => {
   Product.find()
     .then((products) => {
@@ -174,18 +176,25 @@ exports.getInvoice = (req, res, next) => {
       const invoiceName = "invoice" + "-" + orderId + ".pdf";
       const invoicePath = path.join("data", "invoices", invoiceName);
 
-      // case just tiny data in file, the fs.readfile is ok, but the file is large
-      // the server have to read all of that and store in memory of server
-      // if server get thousand of request in a time, sometime the memory will
-      // over flow.Then we can improve this problem by readFile as stream
+      const pdfDoc = new PDFDocument();
 
-      const file = fs.createReadStream(invoicePath);
-      es.setHeader("Content-Type", "application/pdf");
+      // set up res header
+      res.setHeader("Content-Type", "application/pdf");
       res.setHeader(
         "Content-Disposition",
         'inline; filename="' + invoiceName + '"'
       );
-      file.pipe(res);
+
+      // start the stream
+      // set up where to store pdf on server
+      pdfDoc.pipe(fs.createWriteStream(invoicePath));
+
+      // set up to let res receive the pdf
+      pdfDoc.pipe(res);
+      // start write the pdf,streaming
+      pdfDoc.text("hello world");
+      // end the pdf write stream
+      pdfDoc.end();
     })
     .catch((err) => next(err));
 };
