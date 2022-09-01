@@ -176,6 +176,7 @@ exports.getInvoice = (req, res, next) => {
       const invoiceName = "invoice" + "-" + orderId + ".pdf";
       const invoicePath = path.join("data", "invoices", invoiceName);
 
+      // use the pdfKit to create to pdf file from the data from server
       const pdfDoc = new PDFDocument();
 
       // set up res header
@@ -191,8 +192,31 @@ exports.getInvoice = (req, res, next) => {
 
       // set up to let res receive the pdf
       pdfDoc.pipe(res);
-      // start write the pdf,streaming
-      pdfDoc.text("hello world");
+
+      let totalPrice = 0;
+
+      pdfDoc.fontSize(30).text("Invoice");
+
+      pdfDoc.text("----------------------------");
+
+      order.products.forEach((prod) => {
+        totalPrice += prod.quantity * Number(prod.product.price);
+        pdfDoc
+          .fontSize(12)
+          .text(
+            prod.product.title +
+              "-" +
+              prod.quantity +
+              "x" +
+              "$" +
+              prod.product.price
+          );
+      });
+
+      pdfDoc.text("------------------");
+
+      pdfDoc.fontSize(18).text("Total price $ : " + totalPrice);
+
       // end the pdf write stream
       pdfDoc.end();
     })
