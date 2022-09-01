@@ -1,6 +1,7 @@
 const Product = require("../models/product");
 const { validationResult } = require("express-validator");
 const moongose = require("mongoose");
+const fileHelp = require("../util/file");
 
 exports.getAddProduct = (req, res, next) => {
   res.render("admin/edit-product", {
@@ -133,7 +134,10 @@ exports.postEditProduct = (req, res, next) => {
   Product.findById(prodId).then((product) => {
     product.title = updatedTitle;
     product.price = updatedPrice;
+
+    // logic to delete image store in server system when update the image of product in db
     if (image) {
+      fileHelp.deleteFile(product.imageUrl);
       product.imageUrl = image.path;
     }
     product.description = updatedDescription;
@@ -169,8 +173,17 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-
-  Product.findOneAndRemove(prodId)
+  // logic to delete image store in server system when delete product in db
+  Product.findById(prodId)
+    .then((product) => {
+      if (!product) {
+        return next(new Error("Product not exist anymore"));
+      }
+      // use deleteFile from utils/file/helpFunction to unlink the file when delete the db
+      // product.image = "images\2022-09-01T02-55-04.001Z-1503752.jpg"
+      fileHelp.deleteFile(product.imageUrl);
+      return Product.findOneAndRemove(prodId);
+    })
     .then(() => {
       res.redirect("/admin/products");
     })
