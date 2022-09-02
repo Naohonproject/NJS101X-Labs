@@ -57,12 +57,16 @@ const fileFilter = (req, file, cb) => {
 };
 
 app.use(bodyParser.urlencoded({ extended: false }));
+
+// store file in storage that is in server folder
 app.use(
   multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
 );
 app.use(express.static(path.join(__dirname, "public")));
 // we save file in images like the static file then cause the db save the path
 // like image/... so that we need to concat the image names with images folder to match the url /images/image_name
+
+// server the public image
 app.use("/images", express.static(path.join(__dirname, "images")));
 
 // let we use session middleware to create a session in server and store that session to store(this case we config it to save on mongodb)

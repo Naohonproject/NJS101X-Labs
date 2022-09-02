@@ -112,6 +112,8 @@ exports.postEditProduct = (req, res, next) => {
   const updatedDescription = req.body.description;
   const image = req.file;
 
+  console.log(req);
+
   const error = validationResult(req);
 
   if (!error.isEmpty()) {
