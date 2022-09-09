@@ -15,7 +15,7 @@ let transport = nodemailer.createTransport({
 });
 
 exports.getLogIn = (req, res, next) => {
-  let message = req.flash("error");
+  let message = req.("errorflash");
 
   if (message.length > 0) {
     message = message[0];
