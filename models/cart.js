@@ -13,7 +13,9 @@ module.exports = class Cart {
         cart = JSON.parse(content);
       }
       //   take existing products and find that whether the product we add existed or not
-      const existingProductIndex = cart.products.findIndex((prod) => prod.id === id);
+      const existingProductIndex = cart.products.findIndex(
+        (prod) => prod.id === id
+      );
       const existingProduct = cart.products[existingProductIndex];
       let updatedProduct;
       //   add a new product to cart or increase the quantity if existing
@@ -33,7 +35,7 @@ module.exports = class Cart {
       });
     });
   }
-  static deleteProduct(id, producPrice) {
+  static deleteProduct(id, productPrice) {
     fs.readFile(p, (err, fileContent) => {
       if (err) {
         return;
@@ -47,8 +49,11 @@ module.exports = class Cart {
       }
       const quantityProduct = deletedProduct.qty;
 
-      updatedCard.products = updatedCard.products.filter((product) => product.id !== id);
-      updatedCard.totalPrice = updatedCard.totalPrice - quantityProduct * producPrice;
+      updatedCard.products = updatedCard.products.filter(
+        (product) => product.id !== id
+      );
+      updatedCard.totalPrice =
+        updatedCard.totalPrice - quantityProduct * productPrice;
 
       fs.writeFile(p, JSON.stringify(updatedCard), (err) => {
         console.log(err);
